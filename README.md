@@ -4,7 +4,7 @@ Text embedder is a machine learning task that is used to create a vector represe
 
 There are many different ways to create text embeddings, but the most common is to use a neural network. A neural network is a machine learning algorithm that is very good at learning complex relationships. The input to a neural network is a vector, and the output is a vector of the same size. The neural network learns to map the input vectors to the output vectors in a way that captures the relationships between the inputs and outputs.
 
-In order to create a text embedding, the neural network is first trained on a large corpus of text. The training data is a set of sentences, and each sentence is represented as a vector. The vectors are created by taking the word vectors of the words in the sentence and summing them together. The neural network is then trained to map the sentence vectors to a fixed vector size.
+To create text embedding, the neural network is first trained on a large corpus of text. The training data is a set of sentences, and each sentence is represented as a vector. The vectors are created by taking the word vectors of the words in the sentence and summing them together. The neural network is then trained to map the sentence vectors to a fixed vector size.
 
 Once the neural network has been trained, it can then be used to create text embeddings for new pieces of text. The new text is first represented as a vector, and then the neural network is used to map the vector to the fixed vector size. The result is a text embedding that captures the meaning of the text.
 
@@ -14,7 +14,7 @@ There are many different ways to create text embeddings, and the choice of metho
 
 ## 💬 [Co:here](https://cohere.ai/)
 
-Co:here is a powerful neural network, which can generate, embed, and classify text. In this tutorial we will use [Co:here](https://cohere.ai/) to embed descriptions. To use [Co:here](https://cohere.ai/) you need to create account on [Co:here](https://cohere.ai/) and get API key. 
+Co:here is a powerful neural network, which can generate, embed, and classify text. In this tutorial, we will use [Co:here](https://cohere.ai/) to embed descriptions. To use [Co:here](https://cohere.ai/) you need to create account on [Co:here](https://cohere.ai/) and get API key. 
 
 <Img src="https://storage.googleapis.com/lablab-static-eu/images/tutorials/Chatbot-cohere-api.JPG" />
 
@@ -38,7 +38,7 @@ The main part of each neural network is a dataset. In this tutorial, I will use 
 
 The downloaded dataset has 10 folders in each folder is 100 `files.txt` with descriptions. The name of files is a label of description, e.g.`sport_3.txt`.
 
-We will compare `Random Forest` with `Co:here Classifier`, so we have to preapare data in two ways. For `Random Forest` we will use `Co:here Embedder`, we will focus on this in this tutorial. Cohere classifier requires samples, in which each sample should be designed as a list `[description, label]` and I did it in my prevouse tutorial ([here](https://lablab.ai/t/cohere-text-classifier))
+We will compare `Random Forest` with `Co:here Classifier`, so we have to prepare data in two ways. For `Random Forest` we will use `Co:here Embedder`, we will focus on this in this tutorial. Cohere classifier requires samples, in which each sample should be designed as a list `[description, label]` and I did it in my previous tutorial ([here](https://lablab.ai/t/cohere-text-classifier))
 
 ### Loading paths of examples
 
@@ -109,7 +109,7 @@ def examples(no_of_ex):
 
 ## 🔥 Co:here classifier
 
-We back to `CoHere` class. We have to add one methods - to embed examples.
+We back to `CoHere` class. We have to add one method - to embed examples.
 
 The second `cohere` method is to embed text. The method has serval arguments, such as:
 
@@ -117,7 +117,7 @@ The second `cohere` method is to embed text. The method has serval arguments, su
 
 `texts` list of texts to embed.
 
-`truncate` if text is longer than aviable token, which part of text should be taken `LEFT`, `RIGHT` or `NONE`.
+`truncate` if the text is longer than the available token, which part of the text should be taken `LEFT`, `RIGHT` or `NONE`.
 
 All of them you can find [here](https://docs.cohere.ai/embed-reference).
 
@@ -125,11 +125,11 @@ In this tutorial, the `cohere` method will be implemented as a method of our `Co
 
 ```python
  def embed(self, no_of_ex):
-        # as a good developers we should split the dataset. 
+        # as a good developer we should split the dataset. 
         data = pd.DataFrame(examples(no_of_ex))
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
             list(data[0]), list(data[1]), test_size=0.2, random_state=0)
-        # in next two lines we create numeric form of X_train data
+        # in the next two lines we create a numeric form of X_train data
         self.X_train_embeded = self.co.embed(texts=X_train,
                                               model="large",
                                               truncate="LEFT").embeddings
@@ -145,14 +145,14 @@ In this tutorial, the `cohere` method will be implemented as a method of our `Co
 
 ## 📈 Web application - Streamlit
 
-To create an application, in which will be comporasion of two likelihood displays, we will use `Stramlit`. This is an easy and very useful library. 
+To create an application, which will be comparison of two likelihood displays, we will use `Stramlit`. This is an easy and very useful library. 
 
 Installation
 ```python
 pip install streamlit
 ```
 
-We will need two text inputs for `co:here` API key and for text to predict. 
+We will need text inputs for `co:here` API key. 
 
 In docs of [streamlit](https://docs.streamlit.io/) we can find methods:
 
@@ -176,8 +176,8 @@ api_key = st.text_input("API Key:", type="password")
 
 cohere = CoHere(api_key)
 
-cohere.list_of_examples(50)  # number of examples for Cohere classifer
-                             # showed in prevouse tutorial 
+cohere.list_of_examples(50)  # number of examples for Cohere classifier
+                             # showed in the previous tutorial 
 cohere.embed(1000)           # number of examples for random forest
 
 # initialization of random forest with sklearn library
@@ -186,12 +186,12 @@ forest = RandomForestClassifier(max_depth=10, random_state=0)
 col1, col2 = st.columns(2)
 
 if col1.button("Classify"):
-    # training process of random forest, to do it we use embeded text.
+    # training process of random forest, to do it we use embedded text.
     forest.fit(cohere.X_train_embeded, cohere.y_train)
     # prediction process of random forest
     predict = forest.predict_proba(np.array(cohere.X_test_embeded[0]).reshape(1, -1))[0] 
-    here = cohere.classify([cohere.X_test[0]])[0] # prediction process of cohere classifer
-    col2.success(f"Correct prediction: {cohere.y_test[0]}") # display orginal label
+    here = cohere.classify([cohere.X_test[0]])[0] # prediction process of cohere classifier
+    col2.success(f"Correct prediction: {cohere.y_test[0]}") # display original label
 
     col1, col2 = st.columns(2)
     col1.header("Co:here classify") # predictions for cohere
@@ -220,7 +220,7 @@ The created app looks like this
 
 Text embedding is a powerful tool that can be used to improve the performance of machine learning algorithms. Neural networks are a widely used and effective method for creating text embeddings. Text embeddings can be used for tasks such as text classification, text similarity, and text clustering.
 
-In this tutorial we comper the `Radnom Forest` with `Co:here Classifier`, but the possibilites of `Co:here Embedder` are huge. You can build a lot of stuff with it.
+In this tutorial, we compare the `Random Forest` with `Co:here Classifier`, but the possibilities of `Co:here Embedder` are huge. You can build a lot of stuff with it.
 
 Stay tuned for future tutorials!
 The repository of this code can check [here](https://github.com/AdBanacho/cohere-text-embedder).
